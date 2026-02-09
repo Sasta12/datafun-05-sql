@@ -3,16 +3,16 @@
 -- PURPOSE
 -- ============================================================
 -- Answer a basic activity question:
--- "How many sales events have occurred?"
+-- "How many checkouts have occurred?"
 --
 -- This query operates on the dependent/child table.
 --
 -- WHY:
--- - Volume and revenue are different signals
--- - A store may have many small sales or few large ones
+-- - Volume and fines are different signals
+-- - A branch may have many short checkouts or few long ones
 -- - Analysts often start by understanding event counts
---   before analyzing monetary impact
+--   before analyzing impact
 
 SELECT
-  COUNT(*) AS sale_count
-FROM sale;
+  COUNT(*) AS checkout_count
+FROM checkout;

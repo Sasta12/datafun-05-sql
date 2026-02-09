@@ -137,7 +137,7 @@ git pull
 Run the Python source files:
 
 ```shell
-uv run python -m datafun_05_sql.case_duckdb_retail
+uv run python -m datafun_05_sql.Sasta12_duckdb_library
 ```
 
 Run Python checks and tests (as available):
@@ -185,9 +185,9 @@ Choose one of the custom domains in the data/ folder (e.g. library or shelter).
 You will implement the same process as we did for retail using your domain.
 For example, if you choose library, follow the example files in sql/duckdb/ (keep these as working examples):
 
-- case_retail_bootstrap.sql
-- case_retail_clean.sql
-- case_retail_query_kpi_revenue.sql
+- Sasta12_retail_bootstrap.sql
+- Sasta12_retail_clean.sql
+- Sasta12_retail_query_kpi_revenue.sql
 - ...
 
 If you do library, you would add a new file for each of those (~7) files like so:

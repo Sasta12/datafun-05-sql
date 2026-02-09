@@ -2,20 +2,20 @@
 -- ============================================================
 -- PURPOSE
 -- ============================================================
--- Calculate a Key Performance Indicator (KPI) for the retail domain using DuckDB SQL.
+-- Calculate a Key Performance Indicator (KPI) for the library domain using DuckDB SQL.
 --
 -- KPI DRIVES THE WORK:
 -- In analytics, we do not start with "write a query."
 -- We start with a KPI that supports an actionable decision.
 --
 -- ACTIONABLE OUTCOME (EXAMPLE):
--- We want to identify which stores are generating the most revenue so we can:
+-- We want to identify which branches are generating the most checkouts so we can:
 -- - allocate staffing during high-performing periods,
 -- - increase inventory for top categories,
 -- - investigate why low-performing stores are underperforming,
 -- - target promotions where they will have the biggest impact.
 --
--- In this example, our KPI is store revenue (total sales amount) by store.
+-- In this example, our KPI is branch activity (total checkouts) by branch.
 --
 -- ANALYST RESPONSIBILITY:
 -- Analysts are responsible for determining HOW to get the information
@@ -38,62 +38,62 @@
 -- ============================================================
 -- TOPIC DOMAINS + 1:M RELATIONSHIPS
 -- ============================================================
--- OUR DOMAIN: RETAIL
+-- OUR DOMAIN: LIBRARY
 -- Two tables in a 1-to-many relationship (1:M):
--- - store (1): independent/parent table
--- - sale  (M): dependent/child table
+-- - branch (1): independent/parent table
+-- - checkout (M): dependent/child table
 --
 -- HOW THIS RELATES TO OUR KPI:
--- - The store table tells us "which store" (store_id, store_name, location).
--- - The sale table contains the measurable activity (amount, quantity, category, date).
--- - To compute revenue by store, we must:
---   1) connect each sale to its store (JOIN on store_id),
---   2) aggregate sales amounts at the store level (GROUP BY store).
+-- - The branch table tells us "which branch" (branch_id, branch_name, location).
+-- - The checkout table contains the measurable activity (material_type, duration_days, fine_amount, checkout_date).
+-- - To compute activity by branch, we must:
+--   1) connect each checkout to its branch (JOIN on branch_id),
+--   2) aggregate checkouts at the branch level (GROUP BY branch).
 --
 --
 -- ============================================================
 -- KPI DEFINITION
 -- ============================================================
--- KPI NAME: Total Revenue by Store
+-- KPI NAME: Total Checkouts by Branch
 --
 -- KPI QUESTION:
--- "How much revenue did each store generate?"
+-- "How many checkouts did each branch process?"
 --
 -- MEASURE:
--- - revenue = SUM(sale.amount)
+-- - checkouts = COUNT(checkout_id)
 --
 -- GRAIN (LEVEL OF DETAIL):
--- - one row per store
+-- - one row per branch
 --
 -- OUTPUT (WHAT DECISION-MAKERS NEED):
--- - store identifier and name
--- - total revenue
--- - optionally: number of sales and average sale amount
+-- - branch identifier and name
+-- - total checkouts
+-- - optionally: average checkout duration and total fines
 --
 --
 -- ============================================================
 -- EXECUTION: GET THE INFORMATION THAT INFORMS THE KPI
 -- ============================================================
 -- Strategy:
--- - JOIN store (1) to sale (M)
--- - GROUP BY store
--- - SUM amounts to compute revenue
--- - ORDER results so we can quickly see top stores
+-- - JOIN branch (1) to checkout (M)
+-- - GROUP BY branch
+-- - COUNT checkouts to compute activity
+-- - ORDER results so we can quickly see top branches
 --
 SELECT
-  s.store_id,
-  s.store_name,
-  s.city,
-  s.region,
-  COUNT(sa.sale_id) AS sale_count,
-  ROUND(SUM(sa.amount), 2) AS total_revenue,
-  ROUND(AVG(sa.amount), 2) AS avg_sale_amount
-FROM store AS s
-JOIN sale AS sa
-  ON sa.store_id = s.store_id
+  b.branch_id,
+  b.branch_name,
+  b.city,
+  b.region,
+  COUNT(c.checkout_id) AS checkout_count,
+  ROUND(AVG(c.duration_days), 2) AS avg_checkout_duration,
+  ROUND(SUM(c.fine_amount), 2) AS total_fines
+FROM branch AS b
+JOIN checkout AS c
+  ON c.branch_id = b.branch_id
 GROUP BY
-  s.store_id,
-  s.store_name,
-  s.city,
-  s.region
-ORDER BY total_revenue DESC;
+  b.branch_id,
+  b.branch_name,
+  b.city,
+  b.region
+ORDER BY checkout_count DESC;
