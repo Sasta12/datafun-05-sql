@@ -1,0 +1,4 @@
+branch_id,branch_name,city,region,checkout_count,avg_checkout_duration,total_fines
+B002,East Side Branch,Ely,Arrowhead Library System,2,14.0,0.5
+B001,Downtown Branch,Duluth,Arrowhead Library System,2,10.5,1.5
+B003,South Branch,Mankato,Regional Library Network,1,14.0,0.0
